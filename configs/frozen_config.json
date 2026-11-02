@@ -1,0 +1,42 @@
+{
+  "_note": "Hyperparameters chosen on the dev split only (held-in days; see protocol.py). Frozen before any test-split run. Ablations (cov_align) reuse their parent's settings.",
+  "seeds": [0, 1, 2, 3, 4],
+  "adapt_frac": 0.5,
+  "dev_days": {"h1": 3, "m1": 2},
+  "methods": {
+    "h1": {
+      "frozen_heldin_norm": {},
+      "frozen_day_zscore": {},
+      "fewshot_pooled": {"day_weight": 1},
+      "fewshot_day_only": {},
+      "latent_frozen": {"k": 10},
+      "fa_procrustes": {"k": 10},
+      "cov_align": {"k": 10, "lam": 10.0},
+      "tlma": {"k": 10, "lam": 10.0},
+      "br_tlma": {"k": 10, "lam": 1.0},
+      "gru_frozen": {},
+      "gru_fewshot": {"day_weight": 10},
+      "nomad_style": {"beta": 0.1},
+      "gru_aug": {},
+      "gru_tlma": {"lam": 10.0},
+      "gru_br_tlma": {"lam": 10.0}
+    },
+    "m1": {
+      "frozen_heldin_norm": {},
+      "frozen_day_zscore": {},
+      "fewshot_pooled": {"day_weight": 30},
+      "fewshot_day_only": {},
+      "latent_frozen": {"k": 40},
+      "fa_procrustes": {"k": 10},
+      "cov_align": {"k": 40, "lam": 10.0},
+      "tlma": {"k": 40, "lam": 10.0},
+      "br_tlma": {"k": 40, "lam": 10.0},
+      "gru_frozen": {},
+      "gru_fewshot": {"day_weight": 30},
+      "nomad_style": {"beta": 0.1},
+      "gru_aug": {},
+      "gru_tlma": {"lam": 10.0},
+      "gru_br_tlma": {"lam": 10.0}
+    }
+  }
+}

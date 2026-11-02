@@ -1,0 +1,19 @@
+[project]
+name = "falcon-stability"
+version = "0.1.0"
+description = "Cross-day intracortical decoder stability on the FALCON benchmark"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "scikit-learn", "torch", "matplotlib", "pandas", "falcon-challenge==1.0.2"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
