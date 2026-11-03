@@ -23,12 +23,22 @@ from falcon_challenge.interface import BCIDecoder
 from .features import exp_kernel, smooth, zscore_stats
 
 
-def _session_stats(task: str, cfg: FalconConfig) -> dict:
-    """hash_dataset key -> (mu, sd) of smoothed counts, pooled over that day's calibration files."""
+def _session_stats(task: str, cfg: FalconConfig, norm: str = "day_smoothed") -> dict:
+    """hash_dataset key -> (mu, sd) from calibration files.
+
+    norm="day_smoothed": smoothed counts pooled over the day's calibration files (the research pipeline).
+    norm="file_raw": raw counts of each calibration file (the official sklearn demo's choice). Because the
+    decoder is trained on smoothed-count z-scores, the larger raw SD shrinks predictions at test time.
+    """
     from .data import group_by_day, load_split
     stats = {}
     for split in ("held_in_calib", "held_out_calib"):
         for _, files in group_by_day(load_split(task, split)).items():
+            if norm == "file_raw":
+                for s in files:
+                    mu, sd = zscore_stats(s.X.astype(np.float64))
+                    stats[cfg.hash_dataset(pathlib.Path(s.name))] = (mu.astype(np.float32), sd.astype(np.float32))
+                continue
             mu, sd = zscore_stats(np.concatenate([smooth(s.X) for s in files]))
             for s in files:
                 # minival files of a held-in session hash to the same key as its calibration file
@@ -36,7 +46,7 @@ def _session_stats(task: str, cfg: FalconConfig) -> dict:
     return stats
 
 
-def build_payload(task: str, method: str, seed: int = 0) -> dict:
+def build_payload(task: str, method: str, seed: int = 0, norm: str = "day_smoothed") -> dict:
     from .data import load_split
     from .methods import REGISTRY
     ref = [(s.X, s.Y, s.mask) for s in load_split(task, "held_in_calib")]
@@ -44,7 +54,7 @@ def build_payload(task: str, method: str, seed: int = 0) -> dict:
     m = REGISTRY[name](drop_still=task == "h1", seed=seed)
     m.fit_reference(ref)
     cfg = FalconConfig(task=getattr(FalconTask, task))
-    payload = {"task": task, "method": method, "seed": seed, "stats": _session_stats(task, cfg),
+    payload = {"task": task, "method": method, "seed": seed, "norm": norm, "stats": _session_stats(task, cfg, norm),
                "coef": m.wf.model.coef_.astype(np.float32), "intercept": m.wf.model.intercept_.astype(np.float32),
                "history": m.wf.history}
     if m.wf.history != 0:
