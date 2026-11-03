@@ -8,11 +8,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install (CPU torch)
+      - name: Install pinned dependencies (CPU torch)
         run: |
-          pip install torch --index-url https://download.pytorch.org/whl/cpu
-          pip install -e ".[dev]"
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.lock
+          pip install --no-deps -e .
       - name: Unit tests (synthetic data, no download)
         run: pytest -q
-      - name: Results files are present and parse
-        run: python -c "import pandas as pd; [pd.read_csv(f'results/{t}_test_rows.csv') for t in ('h1','m1')]"
+      - name: Summary tables regenerate exactly from the committed result rows
+        run: |
+          python scripts/summarize.py --no-figures
+          git diff --exit-code -- results/

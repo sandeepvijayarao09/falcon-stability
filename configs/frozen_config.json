@@ -15,6 +15,7 @@
   "methods": {
     "h1": {
       "frozen_heldin_norm": {},
+      "frozen_heldin_norm_clip5": {},
       "frozen_day_zscore": {},
       "fewshot_pooled": {
         "day_weight": 1
@@ -25,10 +26,6 @@
       },
       "fa_procrustes": {
         "k": 10
-      },
-      "cov_align": {
-        "k": 10,
-        "lam": 10.0
       },
       "tlma": {
         "k": 10,
@@ -45,16 +42,27 @@
       "nomad_style": {
         "beta": 0.1
       },
-      "gru_aug": {},
+      "gru_aug": {
+        "augment": {
+          "drop": 0.1,
+          "gain": 0.3,
+          "offset": 0.3
+        }
+      },
       "gru_tlma": {
         "lam": 10.0
       },
       "gru_br_tlma": {
         "lam": 10.0
+      },
+      "cov_align": {
+        "k": 10,
+        "lam": 10.0
       }
     },
     "m1": {
       "frozen_heldin_norm": {},
+      "frozen_heldin_norm_clip5": {},
       "frozen_day_zscore": {},
       "fewshot_pooled": {
         "day_weight": 30
@@ -65,10 +73,6 @@
       },
       "fa_procrustes": {
         "k": 10
-      },
-      "cov_align": {
-        "k": 40,
-        "lam": 10.0
       },
       "tlma": {
         "k": 40,
@@ -83,13 +87,23 @@
         "day_weight": 30
       },
       "nomad_style": {
-        "beta": 0.1
+        "beta": 0.0
       },
-      "gru_aug": {},
+      "gru_aug": {
+        "augment": {
+          "drop": 0.1,
+          "gain": 0.3,
+          "offset": 0.3
+        }
+      },
       "gru_tlma": {
         "lam": 10.0
       },
       "gru_br_tlma": {
+        "lam": 10.0
+      },
+      "cov_align": {
+        "k": 40,
         "lam": 10.0
       }
     }
