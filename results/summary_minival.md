@@ -1,4 +1,4 @@
-### M1 · minival
+### M1-A · minival
 
 | Method | Uses today's | 2012-09-26 (+2 d) | 2012-09-27 (+1 d) | 2012-09-28 (+1 d) | mean | days > ref | seed SD |
 |---|---|---|---|---|---|---|---|

@@ -1,0 +1,18 @@
+{
+ "result": [
+  {
+   "minival_split_m1": {
+    "Normalized Latency": 0.00024559923792003696,
+    "Held In R2 Mean": 0.3858920011114743,
+    "Held In R2 Std.": 0.08251360823631514
+   }
+  }
+ ],
+ "submission_result": {
+  "minival_split_m1": {
+   "Normalized Latency": 0.00024559923792003696,
+   "Held In R2 Mean": 0.3858920011114743,
+   "Held In R2 Std.": 0.08251360823631514
+  }
+ }
+}

@@ -1,4 +1,4 @@
-### M1 · dev
+### M1-A · dev
 
 | Method | Uses today's | 2012-09-27 (+1 d) | 2012-09-28 (+2 d) | mean | days > ref | seed SD |
 |---|---|---|---|---|---|---|

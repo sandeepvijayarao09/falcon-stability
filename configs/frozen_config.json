@@ -108,6 +108,53 @@
         "k": 40,
         "lam": 10.0
       }
+    },
+    "m1b": {
+      "frozen_heldin_norm": {},
+      "frozen_heldin_norm_clip5": {},
+      "frozen_day_zscore": {},
+      "fewshot_pooled": {
+        "day_weight": 30
+      },
+      "fewshot_day_only": {},
+      "latent_frozen": {
+        "k": 20
+      },
+      "fa_procrustes": {
+        "k": 20
+      },
+      "tlma": {
+        "k": 20,
+        "lam": 10.0
+      },
+      "br_tlma": {
+        "k": 20,
+        "lam": 0.1
+      },
+      "gru_frozen": {},
+      "gru_fewshot": {
+        "day_weight": 30
+      },
+      "nomad_style": {
+        "beta": 0.0
+      },
+      "gru_aug": {
+        "augment": {
+          "drop": 0.2,
+          "gain": 0.5,
+          "offset": 0.5
+        }
+      },
+      "gru_tlma": {
+        "lam": 10.0
+      },
+      "gru_br_tlma": {
+        "lam": 10.0
+      },
+      "cov_align": {
+        "k": 20,
+        "lam": 10.0
+      }
     }
   }
 }
