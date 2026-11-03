@@ -24,10 +24,15 @@ print(f"CV fit score (uniform R2 on last 20%): {gs.score(Z[n:][m[n:]], Y[n:][m[n
 
 # minival: reference reset() z-scores each file with mean/std of RAW counts of the matching calib file
 by_ses = {s.name.split("_ses-")[1]: s for s in cal}
-scores = []
+scores, by_day = [], {}
 for s in mv:
     c = by_ses[s.name.split("_ses-")[1]]
     mu_c, sd_c = zscore_stats(c.X.astype(float))
     pred = gs.predict((smooth(s.X) - mu_c) / sd_c)  # reference smooths raw counts, then z-scores
     scores.append(r2_vw(s.Y[s.mask], pred[s.mask]))
-print(f"minival Held In Mean R2: {np.mean(scores):.3f} +/- {np.std(scores):.3f}  (reference 0.195)")
+    y, p = by_day.setdefault(s.day_key, ([], []))
+    y.append(s.Y[s.mask]); p.append(pred[s.mask])
+print(f"minival R2, mean over files: {np.mean(scores):.3f} +/- {np.std(scores):.3f}")
+# falcon_challenge groups H1 sets of one day under one session key and scores per day:
+day = [r2_vw(np.concatenate(y), np.concatenate(p)) for y, p in by_day.values()]
+print(f"minival Held In Mean R2, per day (FALCON grouping): {np.mean(day):.3f} +/- {np.std(day):.3f}  (reference 0.195)")

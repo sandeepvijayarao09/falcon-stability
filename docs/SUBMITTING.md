@@ -27,8 +27,9 @@ The fastest path is to start from the official example in
 [snel-repo/falcon-challenge](https://github.com/snel-repo/falcon-challenge):
 `decoder_demos/sklearn_decoder.py`, `sklearn_sample.py` and `sklearn_sample.Dockerfile`.
 To submit a method from this repo:
-- **Frozen WF, per-day z-score**: this *is* the official sklearn demo (`--mode all`), so submit that
-  as a smoke test first.
+- **Frozen WF, per-day z-score**: the official sklearn demo (`--mode all`) is the same decoder up to
+  one detail (it normalises with raw-count stats of the whole calibration file; this repo uses
+  smoothed-count stats of the adaptation block). Submit the demo first as a smoke test.
 - **GRU frozen / BR-TLMA**: fit on all held-in data plus each held-out day's calibration file, store
   the per-day statistics (z-score, TLMA map `A`) keyed by `FalconConfig.hash_dataset(tag)`, and
   apply them in `reset`. Run the GRU one step at a time in `predict`, keeping the hidden state per batch item.
