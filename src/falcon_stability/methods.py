@@ -206,6 +206,11 @@ def behaviour_weights(yhat_ref: np.ndarray, yhat_day: np.ndarray, clip_q: float 
     lr -= lr.max()
     w = np.exp(lr)
     w = np.minimum(w, np.quantile(w, clip_q))
+    # Guard added after a test-split failure (M1, GRU+BR-TLMA, seed 4): heavy-tailed decoder outputs
+    # made the Gaussian ratio span ~8000 nats, every weight underflowed and w / w.mean() was 0/0.
+    # If the weights collapse, fall back to uniform weights (= plain TLMA). Callers log `fallback`.
+    if not np.isfinite(w).all() or w.sum() == 0 or ess(w) < 0.05:
+        return np.ones(len(w))
     return w / w.mean()
 
 
@@ -271,6 +276,7 @@ class BRTLMA(TLMA):
         Ld = np.concatenate([self._latent((smooth(X) - self.mu) / self.sd) for X in blocks_X])
         w = behaviour_weights(self.wf.predict(self.ref_latents), self.wf.predict(Ld), self.kw.get("clip_q", 0.99))
         self.ess = ess(w)
+        self.fallback = bool(np.all(w == 1))
         C0w = lagged_covs(self.ref_latents, self.lags, w)
         self.A = fit_tlma_map(C0w, lagged_covs(Ld, self.lags), self.kw.get("lam", 1.0), self.seed)
 

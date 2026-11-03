@@ -1,0 +1,109 @@
+m1 test frozen_heldin_norm   seed 0  mean R2 -4.440  (3s)
+m1 test frozen_heldin_norm   seed 1  mean R2 -4.440  (3s)
+m1 test frozen_heldin_norm   seed 2  mean R2 -4.440  (3s)
+m1 test frozen_heldin_norm   seed 3  mean R2 -4.440  (3s)
+m1 test frozen_heldin_norm   seed 4  mean R2 -4.440  (3s)
+m1 test frozen_day_zscore    seed 0  mean R2 +0.365  (3s)
+m1 test frozen_day_zscore    seed 1  mean R2 +0.365  (3s)
+m1 test frozen_day_zscore    seed 2  mean R2 +0.365  (3s)
+m1 test frozen_day_zscore    seed 3  mean R2 +0.365  (3s)
+m1 test frozen_day_zscore    seed 4  mean R2 +0.365  (3s)
+m1 test fewshot_pooled       seed 0  mean R2 +0.398  (12s)
+m1 test fewshot_pooled       seed 1  mean R2 +0.398  (12s)
+m1 test fewshot_pooled       seed 2  mean R2 +0.398  (12s)
+m1 test fewshot_pooled       seed 3  mean R2 +0.398  (12s)
+m1 test fewshot_pooled       seed 4  mean R2 +0.398  (13s)
+m1 test fewshot_day_only     seed 0  mean R2 +0.344  (3s)
+m1 test fewshot_day_only     seed 1  mean R2 +0.344  (3s)
+m1 test fewshot_day_only     seed 2  mean R2 +0.344  (3s)
+m1 test fewshot_day_only     seed 3  mean R2 +0.344  (3s)
+m1 test fewshot_day_only     seed 4  mean R2 +0.344  (4s)
+m1 test latent_frozen        seed 0  mean R2 +0.357  (3s)
+m1 test latent_frozen        seed 1  mean R2 +0.357  (3s)
+m1 test latent_frozen        seed 2  mean R2 +0.357  (3s)
+m1 test latent_frozen        seed 3  mean R2 +0.357  (3s)
+m1 test latent_frozen        seed 4  mean R2 +0.357  (3s)
+m1 test fa_procrustes        seed 0  mean R2 +0.300  (6s)
+m1 test fa_procrustes        seed 1  mean R2 +0.331  (6s)
+m1 test fa_procrustes        seed 2  mean R2 +0.296  (5s)
+m1 test fa_procrustes        seed 3  mean R2 +0.340  (5s)
+m1 test fa_procrustes        seed 4  mean R2 +0.318  (6s)
+m1 test cov_align            seed 0  mean R2 +0.354  (4s)
+m1 test cov_align            seed 1  mean R2 +0.354  (3s)
+m1 test cov_align            seed 2  mean R2 +0.354  (3s)
+m1 test cov_align            seed 3  mean R2 +0.354  (3s)
+m1 test cov_align            seed 4  mean R2 +0.354  (3s)
+m1 test tlma                 seed 0  mean R2 +0.352  (3s)
+m1 test tlma                 seed 1  mean R2 +0.352  (3s)
+m1 test tlma                 seed 2  mean R2 +0.352  (3s)
+m1 test tlma                 seed 3  mean R2 +0.352  (3s)
+m1 test tlma                 seed 4  mean R2 +0.352  (3s)
+m1 test br_tlma              seed 0  mean R2 +0.235  (4s)
+m1 test br_tlma              seed 1  mean R2 +0.235  (4s)
+m1 test br_tlma              seed 2  mean R2 +0.235  (4s)
+m1 test br_tlma              seed 3  mean R2 +0.235  (4s)
+m1 test br_tlma              seed 4  mean R2 +0.235  (3s)
+m1 test gru_frozen           seed 0  mean R2 +0.409  (16s)
+m1 test gru_frozen           seed 1  mean R2 +0.394  (15s)
+m1 test gru_frozen           seed 2  mean R2 +0.349  (17s)
+m1 test gru_frozen           seed 3  mean R2 +0.400  (17s)
+m1 test gru_frozen           seed 4  mean R2 +0.387  (16s)
+m1 test gru_fewshot          seed 0  mean R2 +0.453  (25s)
+m1 test gru_fewshot          seed 1  mean R2 +0.433  (27s)
+m1 test gru_fewshot          seed 2  mean R2 +0.417  (26s)
+m1 test gru_fewshot          seed 3  mean R2 +0.446  (26s)
+m1 test gru_fewshot          seed 4  mean R2 +0.439  (26s)
+m1 test nomad_style          seed 0  mean R2 +0.340  (23s)
+m1 test nomad_style          seed 1  mean R2 +0.333  (23s)
+m1 test nomad_style          seed 2  mean R2 +0.240  (22s)
+m1 test nomad_style          seed 3  mean R2 +0.364  (23s)
+m1 test nomad_style          seed 4  mean R2 +0.288  (33s)
+m1 test gru_aug              seed 0  mean R2 +0.344  (17s)
+m1 test gru_aug              seed 1  mean R2 +0.386  (17s)
+m1 test gru_aug              seed 2  mean R2 +0.381  (17s)
+m1 test gru_aug              seed 3  mean R2 +0.398  (17s)
+m1 test gru_aug              seed 4  mean R2 +0.398  (17s)
+m1 test gru_tlma             seed 0  mean R2 +0.413  (21s)
+m1 test gru_tlma             seed 1  mean R2 +0.305  (21s)
+m1 test gru_tlma             seed 2  mean R2 +0.353  (21s)
+m1 test gru_tlma             seed 3  mean R2 +0.404  (22s)
+m1 test gru_tlma             seed 4  mean R2 +0.400  (21s)
+m1 test gru_br_tlma          seed 0  mean R2 +0.400  (26s)
+m1 test gru_br_tlma          seed 1  mean R2 +0.340  (80s)
+m1 test gru_br_tlma          seed 2  mean R2 +0.352  (88s)
+m1 test gru_br_tlma          seed 3  mean R2 +0.395  (35s)
+Traceback (most recent call last):
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/scripts/run_experiments.py", line 50, in <module>
+    main()
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/scripts/run_experiments.py", line 40, in main
+    r = run_method(name, ref, days, adapt_frac=cfg["adapt_frac"], drop_still=a.task == "h1", seed=seed,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/src/falcon_stability/protocol.py", line 68, in run_method
+    pred = m.predict(s.X)
+           ^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/src/falcon_stability/nomad.py", line 225, in predict
+    return self.wf.predict(H2)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/src/falcon_stability/decoders.py", line 34, in predict
+    return self.model.predict(lagged(Z, self.history))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/.venv/lib/python3.11/site-packages/sklearn/linear_model/_ridge.py", line 1279, in predict
+    return super().predict(X)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/.venv/lib/python3.11/site-packages/sklearn/linear_model/_base.py", line 316, in predict
+    return self._decision_function(X)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/.venv/lib/python3.11/site-packages/sklearn/linear_model/_base.py", line 294, in _decision_function
+    X = validate_data(self, X, accept_sparse=["csr", "csc", "coo"], reset=False)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 3041, in validate_data
+    out = check_array(X, input_name="X", **check_params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 1090, in check_array
+    _assert_all_finite(
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 137, in _assert_all_finite
+    _assert_all_finite_element_wise(
+  File "/Users/sandeepvijayarao/MachineLearningProjects/Neuralink/falcon-stability/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 186, in _assert_all_finite_element_wise
+    raise ValueError(msg_err)
+ValueError: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values

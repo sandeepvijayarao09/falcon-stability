@@ -31,6 +31,8 @@ def main():
     ref, days = make_split(a.task, a.split, n_dev_days=cfg["dev_days"][a.task])
     out = ROOT / "results" / f"{a.task}_{a.split}_rows.csv"
     old = pd.read_csv(out) if out.exists() else pd.DataFrame()
+    if len(old):
+        old = old[~(old.method.isin(names) & old.seed.isin(seeds))]
     rows = []
     for name in names:
         for seed in seeds:
@@ -40,10 +42,7 @@ def main():
             rows += r
             print(f"{a.task} {a.split} {name:20s} seed {seed}  mean R2 {pd.DataFrame(r).r2.mean():+.3f}  "
                   f"({time.time() - t:.0f}s)", flush=True)
-    new = pd.DataFrame(rows)
-    if len(old):
-        old = old[~(old.method.isin(names) & old.seed.isin(seeds))]
-    pd.concat([old, new]).to_csv(out, index=False, float_format="%.6f")
+        pd.concat([old, pd.DataFrame(rows)]).to_csv(out, index=False, float_format="%.6f")  # save per method
     print("wrote", out.relative_to(ROOT))
 
 

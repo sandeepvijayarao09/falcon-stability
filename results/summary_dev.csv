@@ -1,0 +1,31 @@
+task,method,label,uses,r2,ci_lo,ci_hi,seed_sd,delta_vs_ref,delta_lo,delta_hi,n_sessions
+h1,frozen_heldin_norm,"Frozen WF, held-in normalisation (strict zero-shot)",none,-0.0582,-0.1449,0.0256,0.0000,-0.0743,-0.1460,-0.0201,6
+h1,frozen_day_zscore,"Frozen WF, per-day z-score (FALCON zero-shot reference)",none,0.0161,-0.0532,0.0805,0.0000,0.0000,0.0000,0.0000,6
+h1,fewshot_pooled,WF few-shot: refit on held-in + today's labels,labels,0.0226,-0.0476,0.0878,0.0000,0.0065,0.0043,0.0084,6
+h1,fewshot_day_only,WF few-shot: today's labels only,labels,-0.0318,-0.0576,-0.0129,0.0000,-0.0479,-0.1284,0.0306,6
+h1,latent_frozen,"PCA latents, frozen",none,-0.0260,-0.0614,0.0184,0.0000,-0.0422,-0.1010,0.0230,6
+h1,fa_procrustes,FA + Procrustes stabilizer (Degenhart 2020 style),unlabelled,-0.0613,-0.1067,-0.0088,0.0076,-0.0774,-0.1595,0.0136,6
+h1,cov_align,"Covariance-only alignment (TLMA ablation, lag 0)",unlabelled,-0.0282,-0.0615,0.0135,0.0000,-0.0443,-0.1048,0.0219,6
+h1,tlma,TLMA: time-lagged moment alignment (ours),unlabelled,-0.0384,-0.0683,-0.0026,0.0000,-0.0545,-0.1154,0.0137,6
+h1,br_tlma,BR-TLMA: behaviour-reweighted TLMA (ours),unlabelled,-0.0211,-0.0520,0.0130,0.0000,-0.0372,-0.0914,0.0223,6
+h1,gru_frozen,"GRU dynamics backbone, frozen, per-day z-score",none,-0.0570,-0.1373,0.0130,0.0131,-0.0731,-0.1113,-0.0387,6
+h1,gru_fewshot,GRU few-shot: readout refit with today's labels,labels,-0.0160,-0.0814,0.0348,0.0095,-0.0322,-0.0621,0.0006,6
+h1,nomad_style,"NoMAD-style alignment (Karpowicz 2022, scaled down)",unlabelled,-0.0440,-0.1185,0.0219,0.0122,-0.0601,-0.0913,-0.0316,6
+h1,gru_aug,GRU trained with drift augmentation (after Sussillo 2016),none,-0.0254,-0.0808,0.0269,0.0216,-0.0416,-0.0913,0.0045,6
+h1,gru_tlma,GRU + TLMA (ours),unlabelled,-0.0674,-0.1491,-0.0014,0.0188,-0.0836,-0.1180,-0.0491,6
+h1,gru_br_tlma,GRU + BR-TLMA (ours),unlabelled,-0.0669,-0.1491,-0.0014,0.0206,-0.0830,-0.1169,-0.0490,6
+m1,frozen_heldin_norm,"Frozen WF, held-in normalisation (strict zero-shot)",none,0.0346,-0.0064,0.0757,0.0000,-0.3866,-0.4347,-0.3385,2
+m1,frozen_day_zscore,"Frozen WF, per-day z-score (FALCON zero-shot reference)",none,0.4212,0.4142,0.4283,0.0000,0.0000,0.0000,0.0000,2
+m1,fewshot_pooled,WF few-shot: refit on held-in + today's labels,labels,0.5020,0.4781,0.5260,0.0000,0.0808,0.0639,0.0977,2
+m1,fewshot_day_only,WF few-shot: today's labels only,labels,0.4078,0.3404,0.4751,0.0000,-0.0135,-0.0738,0.0468,2
+m1,latent_frozen,"PCA latents, frozen",none,0.4800,0.4618,0.4983,0.0000,0.0588,0.0476,0.0700,2
+m1,fa_procrustes,FA + Procrustes stabilizer (Degenhart 2020 style),unlabelled,0.4511,0.4200,0.4822,0.0066,0.0299,0.0059,0.0539,2
+m1,cov_align,"Covariance-only alignment (TLMA ablation, lag 0)",unlabelled,0.4688,0.4567,0.4809,0.0000,0.0476,0.0425,0.0527,2
+m1,tlma,TLMA: time-lagged moment alignment (ours),unlabelled,0.4653,0.4552,0.4754,0.0000,0.0441,0.0410,0.0472,2
+m1,br_tlma,BR-TLMA: behaviour-reweighted TLMA (ours),unlabelled,0.4816,0.4653,0.4979,0.0000,0.0604,0.0511,0.0696,2
+m1,gru_frozen,"GRU dynamics backbone, frozen, per-day z-score",none,0.5667,0.5403,0.5932,0.0144,0.1455,0.1261,0.1649,2
+m1,gru_fewshot,GRU few-shot: readout refit with today's labels,labels,0.5804,0.5459,0.6149,0.0098,0.1592,0.1317,0.1867,2
+m1,nomad_style,"NoMAD-style alignment (Karpowicz 2022, scaled down)",unlabelled,0.4667,0.4075,0.5259,0.2089,0.0454,-0.0208,0.1117,2
+m1,gru_aug,GRU trained with drift augmentation (after Sussillo 2016),none,0.5858,0.5824,0.5893,0.0103,0.1646,0.1541,0.1751,2
+m1,gru_tlma,GRU + TLMA (ours),unlabelled,0.4128,0.4015,0.4241,0.0846,-0.0084,-0.0267,0.0099,2
+m1,gru_br_tlma,GRU + BR-TLMA (ours),unlabelled,0.4652,0.4599,0.4704,0.0582,0.0440,0.0316,0.0563,2

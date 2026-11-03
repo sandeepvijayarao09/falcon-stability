@@ -238,5 +238,6 @@ class GRUBRTLMA(GRUTLMA):
         Hd = np.concatenate([full_states(self.net0, (smooth(X) - self.mu) / self.sd) for X in blocks_X])
         w = behaviour_weights(self.yhat_ref, self.wf.predict(Hd), self.kw.get("clip_q", 0.99))
         self.ess = ess(w)
+        self.fallback = bool(np.all(w == 1))
         C0w = lagged_covs(self.pca.transform(self.Href), self.lags, w)
         self.A = fit_tlma_map(C0w, lagged_covs(self.pca.transform(Hd), self.lags), self.kw.get("lam", 10.0), self.seed)

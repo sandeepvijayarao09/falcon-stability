@@ -70,5 +70,6 @@ def run_method(name: str, ref, eval_days, adapt_frac: float = 0.5, drop_still: b
             ev[c:] = True
             ev &= s.mask
             rows.append(dict(method=name, seed=seed, session=s.name, day=ed.day, days_since=ed.days_since,
-                             r2=r2_vw(s.Y[ev], pred[ev]), n_eval=int(ev.sum())))
+                             r2=r2_vw(s.Y[ev], pred[ev]), n_eval=int(ev.sum()),
+                             fallback=getattr(m, "fallback", None)))
     return rows
