@@ -23,7 +23,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", required=True, choices=["h1", "m1"])
+    ap.add_argument("--task", required=True, choices=["h1", "m1", "m1b", "m2"])
     ap.add_argument("--split", default="test", choices=["dev", "test", "minival"])
     ap.add_argument("--allow-dirty", action="store_true", help="permit uncommitted code (rows are flagged)")
     a = ap.parse_args()

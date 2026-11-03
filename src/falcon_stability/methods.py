@@ -338,10 +338,6 @@ REGISTRY = {c.name: c for c in [FrozenHeldInNorm, FrozenHeldInNormClip, FrozenDa
                                FewShotDayOnly, LatentBase, FAProcrustes, TLMA, BRTLMA, CovAlign]}
 
 
-def _register_optional():
-    from .nomad import GRUAug, GRUBRTLMA, GRUFewShot, GRUFrozen, GRUTLMA, NoMADStyle
-    for c in (NoMADStyle, GRUFrozen, GRUFewShot, GRUAug, GRUTLMA, GRUBRTLMA):
-        REGISTRY[c.name] = c
-
-
-_register_optional()
+# GRU-based methods live in nomad.py and register themselves into REGISTRY on import. Importing the
+# module object (not names from it) keeps this safe whichever of the two modules is imported first.
+from . import nomad as _nomad  # noqa: E402,F401

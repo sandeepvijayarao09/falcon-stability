@@ -36,10 +36,14 @@ def parse_date(stem: str) -> dt.date:
     return dt.date(*map(int, m.groups()))
 
 
+# Local task name -> falcon_challenge loader. M1-B (DANDI 001209, a second monkey) shares M1's format.
+LOADER = {"h1": "h1", "m1": "m1", "m1b": "m1", "m2": "m2", "h2": "h2"}
+
+
 def _load_nwb(path: pathlib.Path, task: str):
     from falcon_challenge.config import FalconTask
     from falcon_challenge.dataloaders import load_nwb
-    X, Y, tc, mask = load_nwb(path, dataset=getattr(FalconTask, task))
+    X, Y, tc, mask = load_nwb(path, dataset=getattr(FalconTask, LOADER[task]))
     return np.asarray(X), np.asarray(Y, dtype=np.float32), np.asarray(tc, bool), np.asarray(mask, bool)
 
 

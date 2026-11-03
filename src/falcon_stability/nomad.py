@@ -20,7 +20,7 @@ import torch.nn as nn
 
 from .decoders import WienerFilter, train_mask
 from .features import smooth, zscore_stats
-from .methods import Method, _zs_per_file
+from .methods import REGISTRY, Method, _zs_per_file
 
 
 class Dyn(nn.Module):
@@ -245,3 +245,7 @@ class GRUBRTLMA(GRUTLMA):
         Ld = [self.pca.transform(h) for h in Hd]
         self.A = fit_tlma_map(C0w, lagged_covs(Ld, self.lags), self.kw.get("lam", 10.0), self.seed)
         self.diag = {**map_diag(self.A), "ess": ess(w), "fallback": bool(np.all(w == 1))}
+
+
+for _c in (NoMADStyle, GRUFrozen, GRUFewShot, GRUAug, GRUTLMA, GRUBRTLMA):
+    REGISTRY[_c.name] = _c

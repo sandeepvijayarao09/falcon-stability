@@ -135,3 +135,34 @@ def test_behaviour_weights_fall_back_to_uniform_when_degenerate():
     day = rng.normal(size=(500, 4)) * 0.05
     w = behaviour_weights(ref, day)
     assert np.isfinite(w).all() and w.mean() == pytest.approx(1)
+
+
+@pytest.mark.parametrize("method", ["wf", "gru"])
+def test_online_submission_decoder_matches_offline_pipeline(tmp_path, method):
+    """The EvalAI decoder (one bin at a time) must reproduce the offline pipeline exactly."""
+    import pathlib
+    import torch
+    from falcon_challenge.config import FalconConfig, FalconTask
+    from falcon_stability.features import smooth, zscore_stats
+    from falcon_stability.submission import StabilityDecoder
+    rng = np.random.default_rng(5)
+    C, T, D = 64, 400, 16   # M1 shapes
+    ref = [(rng.poisson(1.0, (1500, C)).astype(np.uint8), rng.normal(size=(1500, D)).astype(np.float32),
+            np.ones(1500, bool)) for _ in range(2)]
+    name = {"wf": "frozen_day_zscore", "gru": "gru_frozen"}[method]
+    m = REGISTRY[name](seed=0, steps=20)
+    m.fit_reference(ref)
+    X = rng.poisson(1.2, (T, C)).astype(np.uint8)
+    m.adapt([X])
+    offline = m.predict(X)
+    mu, sd = zscore_stats(smooth(X))
+    tag = "sub-MonkeyL-held-out-calib_ses-20121004_behavior+ecephys"
+    payload = {"method": method, "stats": {"20121004": (mu.astype(np.float32), sd.astype(np.float32))},
+               "coef": m.wf.model.coef_.astype(np.float32), "intercept": m.wf.model.intercept_.astype(np.float32)}
+    if method == "gru":
+        payload.update(gru_state=m.net0.state_dict(), hidden=m.net0.gru.hidden_size)
+    torch.save(payload, tmp_path / "p.pt")
+    dec = StabilityDecoder(FalconConfig(task=FalconTask.m1), str(tmp_path / "p.pt"), batch_size=1)
+    dec.reset([pathlib.Path(tag + ".nwb")])
+    online = np.concatenate([dec.predict(X[t:t + 1]) for t in range(T)])
+    assert np.allclose(online, offline, atol=2e-3, rtol=1e-3)

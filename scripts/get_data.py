@@ -1,11 +1,12 @@
 """Download FALCON datasets from DANDI into data/<task>/{held_in_calib,held_out_calib,minival}/
 and verify them against data_manifest.json (SHA-256 per file).
 
-Usage: python scripts/get_data.py h1 m1 [h2 m2] [--write-manifest]
-Sizes: h1 ~0.1 GB, m1 ~0.3 GB, h2 ~1.2 GB, m2 ~15.9 GB.
+Usage: python scripts/get_data.py h1 m1 m1b m2 [h2] [--write-manifest]
+Sizes: h1 ~0.1 GB, m1 (M1-A) ~0.3 GB, m1b (M1-B) ~0.2 GB, m2 ~15.9 GB, h2 ~1.2 GB.
 
-Versions: M1 is pinned to the published DANDI version below. H1 (000954) has no published version
-(only `draft`, as of Nov 2026), so the manifest's checksums are the pin: a changed file fails loudly.
+Versions: M1-A is pinned to the published DANDI version below. H1 (000954), M1-B (001209) and M2
+(000953) have no published version (only `draft`, as of Nov 2026), so the manifest's checksums are
+the pin: a changed file fails loudly.
 """
 import argparse
 import hashlib
@@ -13,7 +14,7 @@ import json
 import pathlib
 import urllib.request
 
-DANDISETS = {"h1": ("000954", "draft"), "m1": ("000941", "0.241029.1405"),
+DANDISETS = {"h1": ("000954", "draft"), "m1": ("000941", "0.241029.1405"), "m1b": ("001209", "draft"),
              "h2": ("000950", "draft"), "m2": ("000953", "draft")}
 API = "https://api.dandiarchive.org/api"
 ROOT = pathlib.Path(__file__).resolve().parents[1]
