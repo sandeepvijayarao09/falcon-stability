@@ -78,6 +78,7 @@ def drift_augment(zb, rng, gain=0.3, offset=0.3, drop=0.1):
 
 class NoMADStyle(Method):
     name = "nomad_style"
+    stochastic = True
 
     def fit_reference(self, ref):
         torch.manual_seed(self.seed)
@@ -105,6 +106,7 @@ class NoMADStyle(Method):
         net.eval()
         self.net0 = net
         Hs = [full_states(net, z) for z in Zs]
+        self.Hsegs = Hs  # per-file GRU states on reference data
         Hcat = np.concatenate(Hs)
         self.mu0, self.S0 = [t.detach() for t in gauss_stats(torch.tensor(Hcat, dtype=torch.float64))]
         Y = np.concatenate([y for _, y, _ in ref])
@@ -142,6 +144,7 @@ class NoMADStyle(Method):
             opt.step()
         net.eval()
         self.net = net
+        self.diag = {"align_W_minus_I_fro": float(torch.linalg.norm(net.align.weight - torch.eye(net.align.weight.shape[0])))}
 
     def predict(self, X):
         return self.wf.predict(full_states(self.net, (smooth(X) - self.mu) / self.sd))
@@ -164,8 +167,7 @@ class GRUFewShot(GRUFrozen):
 
     def fit_reference(self, ref):
         super().fit_reference(ref)
-        Zs = _zs_per_file([X for X, _, _ in ref])
-        self.Href = np.concatenate([full_states(self.net0, z) for z in Zs])
+        self.Href = np.concatenate(self.Hsegs)
         self.Yref = np.concatenate([y for _, y, _ in ref])
         self.mref = train_mask(self.Yref, np.concatenate([mm for _, _, mm in ref]), self.drop_still)
 
@@ -194,26 +196,29 @@ class GRUAug(GRUFrozen):
 
 class GRUTLMA(GRUFrozen):
     """TLMA in GRU-state space: align PCA(k) of the day's GRU states to the reference with lagged
-    covariances; decode from the re-mapped states."""
+    covariances (pooled within files); decode from the re-mapped states."""
     name = "gru_tlma"
 
     def fit_reference(self, ref):
         from sklearn.decomposition import PCA
         from .methods import lagged_covs
         super().fit_reference(ref)
-        Zs = _zs_per_file([X for X, _, _ in ref])
-        Href = np.concatenate([full_states(self.net0, z) for z in Zs])
+        self.Href = np.concatenate(self.Hsegs)
         self.k = self.kw.get("k", 32)
-        self.pca = PCA(self.k, random_state=self.seed).fit(Href)
+        self.pca = PCA(self.k, svd_solver="full").fit(self.Href)
         self.lags = self.kw.get("lags", (0, 1, 2, 4, 8, 16))
-        self.C0 = lagged_covs(self.pca.transform(Href), self.lags)
+        self.ref_segments = [self.pca.transform(h) for h in self.Hsegs]
+        self.C0 = lagged_covs(self.ref_segments, self.lags)
+
+    def _day_states(self, blocks_X):
+        return [full_states(self.net0, (smooth(X) - self.mu) / self.sd) for X in blocks_X]
 
     def adapt(self, blocks_X, blocks_Y=None, blocks_m=None):
-        from .methods import fit_tlma_map, lagged_covs
+        from .methods import fit_tlma_map, lagged_covs, map_diag
         super().adapt(blocks_X)
-        Ld = np.concatenate([self.pca.transform(full_states(self.net0, (smooth(X) - self.mu) / self.sd))
-                             for X in blocks_X])
+        Ld = [self.pca.transform(h) for h in self._day_states(blocks_X)]
         self.A = fit_tlma_map(self.C0, lagged_covs(Ld, self.lags), self.kw.get("lam", 10.0), self.seed)
+        self.diag = map_diag(self.A)
 
     def predict(self, X):
         H = full_states(self.net0, (smooth(X) - self.mu) / self.sd)
@@ -223,21 +228,20 @@ class GRUTLMA(GRUFrozen):
 
 
 class GRUBRTLMA(GRUTLMA):
-    """Behaviour-reweighted TLMA in GRU-state space (this repo)."""
+    """Behaviour-reweighted TLMA in GRU-state space."""
     name = "gru_br_tlma"
 
     def fit_reference(self, ref):
         super().fit_reference(ref)
-        Zs = _zs_per_file([X for X, _, _ in ref])
-        self.Href = np.concatenate([full_states(self.net0, z) for z in Zs])
         self.yhat_ref = self.wf.predict(self.Href)
 
     def adapt(self, blocks_X, blocks_Y=None, blocks_m=None):
-        from .methods import behaviour_weights, ess, fit_tlma_map, lagged_covs
+        from .methods import behaviour_weights, ess, fit_tlma_map, lagged_covs, map_diag
         GRUFrozen.adapt(self, blocks_X)
-        Hd = np.concatenate([full_states(self.net0, (smooth(X) - self.mu) / self.sd) for X in blocks_X])
-        w = behaviour_weights(self.yhat_ref, self.wf.predict(Hd), self.kw.get("clip_q", 0.99))
-        self.ess = ess(w)
-        self.fallback = bool(np.all(w == 1))
-        C0w = lagged_covs(self.pca.transform(self.Href), self.lags, w)
-        self.A = fit_tlma_map(C0w, lagged_covs(self.pca.transform(Hd), self.lags), self.kw.get("lam", 10.0), self.seed)
+        Hd = self._day_states(blocks_X)
+        w = behaviour_weights(self.yhat_ref, self.wf.predict(np.concatenate(Hd)), self.kw.get("clip_q", 0.99))
+        wseg = np.split(w, np.cumsum([len(h) for h in self.Hsegs])[:-1])
+        C0w = lagged_covs(self.ref_segments, self.lags, wseg)
+        Ld = [self.pca.transform(h) for h in Hd]
+        self.A = fit_tlma_map(C0w, lagged_covs(Ld, self.lags), self.kw.get("lam", 10.0), self.seed)
+        self.diag = {**map_diag(self.A), "ess": ess(w), "fallback": bool(np.all(w == 1))}

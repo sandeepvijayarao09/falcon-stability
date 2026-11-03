@@ -2,8 +2,10 @@
 
 Every method is fitted once on reference (held-in) sessions, then for each new day it may `adapt`
 on that day's adaptation block (unlabelled, unless `needs_labels`), and `predict` on full files.
-All features are causal, so predicting the whole file and scoring only the evaluation block is
-equivalent to running online after adaptation.
+All features are causal, so predicting a whole file and scoring only bins after the adaptation
+block is equivalent to running online after adaptation.
+
+After `adapt`, `self.diag` holds per-day diagnostics (e.g. ||A - I||_F for alignment maps).
 """
 from __future__ import annotations
 
@@ -27,10 +29,12 @@ def _zs_per_file(blocks: list[np.ndarray]) -> list[np.ndarray]:
 class Method:
     name = "base"
     needs_labels = False
+    stochastic = False  # True if `seed` changes the result; deterministic methods are run once
 
     def __init__(self, history: int = 0, drop_still: bool = False, seed: int = 0, **kw):
         self.history, self.drop_still, self.seed = history, drop_still, seed
         self.kw = kw
+        self.diag: dict = {}
 
     # ref: list of (X, Y, mask) for held-in training files
     def fit_reference(self, ref):
@@ -47,21 +51,34 @@ class Method:
 class FrozenHeldInNorm(Method):
     """Strict zero-shot: one z-score computed on all held-in data, decoder frozen, no new-day info."""
     name = "frozen_heldin_norm"
+    clip = None
 
     def fit_reference(self, ref):
         S = np.concatenate([smooth(X) for X, _, _ in ref])
         self.mu, self.sd = zscore_stats(S)
         Y = np.concatenate([y for _, y, _ in ref])
         m = train_mask(Y, np.concatenate([mm for _, _, mm in ref]), self.drop_still)
-        self.wf = WienerFilter(self.history, self.kw.get("alpha")).fit((S - self.mu) / self.sd, Y, m)
+        self.wf = WienerFilter(self.history, self.kw.get("alpha")).fit(self._z(S), Y, m)
+
+    def _z(self, S):
+        Z = (S - self.mu) / self.sd
+        return Z if self.clip is None else np.clip(Z, -self.clip, self.clip)
 
     def predict(self, X):
-        return self.wf.predict((smooth(X) - self.mu) / self.sd)
+        return self.wf.predict(self._z(smooth(X)))
+
+
+class FrozenHeldInNormClip(FrozenHeldInNorm):
+    """Strict zero-shot with z clipped to +/-5. The clip value was fixed a priori (not tuned) after
+    diagnosing that the M1 collapse comes from a few held-in-silent channels reaching z ~ 77."""
+    name = "frozen_heldin_norm_clip5"
+    clip = 5.0
 
 
 class FrozenDayZscore(Method):
-    """FALCON reference zero-shot WF: frozen weights, inputs z-scored with each day's own stats
-    (estimated from the unlabelled adaptation block)."""
+    """Frozen WF with inputs z-scored by each day's own stats, estimated from the unlabelled
+    adaptation block (FALCON-style zero-shot). Differs from the official sklearn demo in one
+    detail: the demo normalises with mean/std of *raw* counts, we use stats of *smoothed* counts."""
     name = "frozen_day_zscore"
 
     def fit_reference(self, ref):
@@ -110,24 +127,21 @@ class FewShotDayOnly(FrozenDayZscore):
 
 # ----------------------------------------------------------------------------- latent-space pipelines
 class LatentBase(Method):
-    """Shared reference latent space: z-scored smoothed rates -> k latents -> ridge to kinematics."""
+    """Shared reference latent space: z-scored smoothed rates -> k PCA latents -> ridge to behaviour."""
     name = "latent_frozen"
-
-    def _project_ref(self, Zs):
-        raise NotImplementedError
 
     def fit_reference(self, ref):
         self.k = self.kw.get("k", 20)
         Zs = _zs_per_file([X for X, _, _ in ref])
-        self.Zref = np.concatenate(Zs)
-        L = self._fit_latent(self.Zref)
+        L = self._fit_latent(np.concatenate(Zs))
+        self.ref_segments = np.split(L, np.cumsum([len(z) for z in Zs])[:-1])  # per file, for lagged moments
         Y = np.concatenate([y for _, y, _ in ref])
         m = train_mask(Y, np.concatenate([mm for _, _, mm in ref]), self.drop_still)
         self.ref_latents = L
         self.wf = WienerFilter(self.history, self.kw.get("alpha")).fit(L, Y, m)
 
     def _fit_latent(self, Z):
-        self.pca = PCA(self.k, random_state=self.seed).fit(Z)
+        self.pca = PCA(self.k, svd_solver="full").fit(Z)
         return self.pca.transform(Z)
 
     def _latent(self, Z):
@@ -148,6 +162,7 @@ class FAProcrustes(LatentBase):
     channels whose loadings agree with the reference, Procrustes-rotate the new latents onto the
     reference latents using only those stable channels. Label-free."""
     name = "fa_procrustes"
+    stochastic = True  # randomized SVD inside FactorAnalysis
 
     def _fit_latent(self, Z):
         self.fa_ref = FactorAnalysis(self.k, random_state=self.seed).fit(Z)
@@ -173,21 +188,37 @@ class FAProcrustes(LatentBase):
             worst = keep[np.argsort(err[keep])[-n_drop:]]
             keep = np.setdiff1d(keep, worst)
         self.O, self.stable = O, keep
+        self.diag = {"rot_from_I": float(np.linalg.norm(O - np.eye(self.k)))}
 
     def _day_latent(self, Z):
         return self.fa_day.transform(Z) @ self.O
 
 
-def lagged_covs(L: np.ndarray, lags, w: np.ndarray | None = None) -> list[np.ndarray]:
-    """Symmetrised lagged covariances. Optional per-bin weights w (pair (t, t+tau) gets w[t])."""
-    L = np.asarray(L, np.float64)
-    T = len(L)
-    w = np.ones(T) if w is None else np.asarray(w, np.float64)
-    L = L - (w[:, None] * L).sum(0) / w.sum()
+def lagged_covs(segments, lags, weights=None) -> list[np.ndarray]:
+    """Symmetrised lagged covariances, pooled over segments (files) so that no lagged pair straddles
+    a file boundary. `segments`: array (T, k) or list of arrays. Optional per-bin weights (same
+    structure); a pair (t, t+tau) gets the weight of t.
+
+    Symmetrising keeps only the time-reversible part of each lagged moment: any purely rotational
+    (antisymmetric) dynamics is discarded, which limits what these moments can identify.
+    """
+    if isinstance(segments, np.ndarray):
+        segments = [segments]
+        weights = None if weights is None else [weights]
+    segs = [np.asarray(s, np.float64) for s in segments]
+    ws = [np.ones(len(s)) for s in segs] if weights is None else [np.asarray(w, np.float64) for w in weights]
+    mu = sum((w[:, None] * s).sum(0) for s, w in zip(segs, ws)) / sum(w.sum() for w in ws)
+    segs = [s - mu for s in segs]
     out = []
     for t in lags:
-        A, B, ww = L[: T - t], L[t:], w[: T - t]
-        Ct = (ww[:, None] * A).T @ B / ww.sum()
+        num, den = 0.0, 0.0
+        for s, w in zip(segs, ws):
+            if len(s) <= t:
+                continue
+            A, B, ww = s[: len(s) - t], s[t:], w[: len(s) - t]
+            num = num + (ww[:, None] * A).T @ B
+            den += ww.sum()
+        Ct = num / den
         out.append(0.5 * (Ct + Ct.T))
     return out
 
@@ -215,6 +246,7 @@ def behaviour_weights(yhat_ref: np.ndarray, yhat_day: np.ndarray, clip_q: float 
 
 
 def ess(w: np.ndarray) -> float:
+    """Normalised effective sample size, in (0, 1]."""
     return float(w.sum() ** 2 / (w ** 2).sum() / len(w))
 
 
@@ -241,44 +273,56 @@ def fit_tlma_map(C0: list[np.ndarray], Cd: list[np.ndarray], lam: float, seed: i
     return A.detach().numpy()
 
 
-class TLMA(LatentBase):
-    """Time-Lagged Moment Alignment (this repo). Project new-day activity into the reference PCA
-    space, then learn a k x k map A so the new day's lagged covariances C_d(tau) match the
-    reference's C_0(tau) for several lags, with a ridge pull toward the identity.
+def map_diag(A: np.ndarray) -> dict:
+    k = len(A)
+    return {"A_minus_I_fro": float(np.linalg.norm(A - np.eye(k))),
+            "A_minus_I_rel": float(np.linalg.norm(A - np.eye(k)) / np.sqrt(k))}
 
-    Covariance at lag 0 alone only fixes A up to a rotation; adding lagged (dynamical) moments breaks
-    that ambiguity, the same identifiability argument as AMUSE/SOBI blind source separation.
+
+class TLMA(LatentBase):
+    """Time-Lagged Moment Alignment. Project new-day activity into the reference PCA space, then
+    learn a k x k map A so the new day's lagged covariances C_d(tau) match the reference's C_0(tau)
+    for several lags, with a ridge pull toward the identity.
+
+    Motivation: lag-0 covariance fixes A only up to an orthogonal transform; lagged moments can break
+    that ambiguity when latents have distinct autocorrelations (as in AMUSE/SOBI). It cannot when
+    latents share autocorrelation or rotate into each other (see tests/test_core.py).
     """
     name = "tlma"
 
     def fit_reference(self, ref):
         super().fit_reference(ref)
         self.lags = self.kw.get("lags", (0, 1, 2, 4, 8, 16))
-        self.C0 = lagged_covs(self.ref_latents, self.lags)
+        self.C0 = lagged_covs(self.ref_segments, self.lags)
+
+    def _day_segments(self, blocks_X):
+        return [self._latent((smooth(X) - self.mu) / self.sd) for X in blocks_X]
 
     def adapt(self, blocks_X, blocks_Y=None, blocks_m=None):
         super().adapt(blocks_X)
-        Ld = np.concatenate([self._latent((smooth(X) - self.mu) / self.sd) for X in blocks_X])
+        Ld = self._day_segments(blocks_X)
         self.A = fit_tlma_map(self.C0, lagged_covs(Ld, self.lags), self.kw.get("lam", 1.0), self.seed)
+        self.diag = map_diag(self.A)
 
     def _day_latent(self, Z):
         return self._latent(Z) @ self.A.T
 
 
 class BRTLMA(TLMA):
-    """Behaviour-reweighted TLMA (this repo): like TLMA, but the reference moments are recomputed
-    with weights that make the reference's decoded-behaviour distribution match today's, so a short
-    block that covers only some movements is not forced onto moments of all movements."""
+    """Behaviour-reweighted TLMA: like TLMA, but the reference moments are recomputed with weights
+    that make the reference's decoded-behaviour distribution match today's, so a short block that
+    covers only some movements is not forced onto moments of all movements."""
     name = "br_tlma"
 
     def adapt(self, blocks_X, blocks_Y=None, blocks_m=None):
         LatentBase.adapt(self, blocks_X)
-        Ld = np.concatenate([self._latent((smooth(X) - self.mu) / self.sd) for X in blocks_X])
-        w = behaviour_weights(self.wf.predict(self.ref_latents), self.wf.predict(Ld), self.kw.get("clip_q", 0.99))
-        self.ess = ess(w)
-        self.fallback = bool(np.all(w == 1))
-        C0w = lagged_covs(self.ref_latents, self.lags, w)
+        Ld = self._day_segments(blocks_X)
+        w = behaviour_weights(self.wf.predict(self.ref_latents), self.wf.predict(np.concatenate(Ld)),
+                              self.kw.get("clip_q", 0.99))
+        wseg = np.split(w, np.cumsum([len(s) for s in self.ref_segments])[:-1])
+        C0w = lagged_covs(self.ref_segments, self.lags, wseg)
         self.A = fit_tlma_map(C0w, lagged_covs(Ld, self.lags), self.kw.get("lam", 1.0), self.seed)
+        self.diag = {**map_diag(self.A), "ess": ess(w), "fallback": bool(np.all(w == 1))}
 
 
 class CovAlign(TLMA):
@@ -290,8 +334,8 @@ class CovAlign(TLMA):
         super().fit_reference(ref)
 
 
-REGISTRY = {c.name: c for c in [FrozenHeldInNorm, FrozenDayZscore, FewShotPooled, FewShotDayOnly,
-                               LatentBase, FAProcrustes, TLMA, BRTLMA, CovAlign]}
+REGISTRY = {c.name: c for c in [FrozenHeldInNorm, FrozenHeldInNormClip, FrozenDayZscore, FewShotPooled,
+                               FewShotDayOnly, LatentBase, FAProcrustes, TLMA, BRTLMA, CovAlign]}
 
 
 def _register_optional():

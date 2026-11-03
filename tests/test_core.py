@@ -42,29 +42,59 @@ def test_parse_date_both_formats():
     assert str(parse_date("sub-MonkeyL-held-in-calib_ses-20120924_behavior+ecephys")) == "2012-09-24"
 
 
-def _ar_latents(T, k, rng):
-    """Latents with distinct temporal autocorrelations (identifiable from lagged moments)."""
-    rho = np.linspace(0.5, 0.98, k)
+def _ar_latents(T, k, rng, rho=None):
+    """Unit-variance AR(1) latents; distinct `rho` per latent makes them identifiable from lagged moments."""
+    rho = np.linspace(0.5, 0.98, k) if rho is None else np.asarray(rho, float)
     L = np.zeros((T, k))
     for t in range(1, T):
         L[t] = rho * L[t - 1] + rng.normal(size=k) * np.sqrt(1 - rho ** 2)
     return L
 
 
-def test_tlma_recovers_a_mixing_that_covariance_alone_cannot():
-    rng = np.random.default_rng(1)
-    k, lags = 4, (0, 1, 2, 4, 8)
-    L0 = _ar_latents(20000, k, rng)
-    Q, _ = np.linalg.qr(rng.normal(size=(k, k)))
-    R = Q @ np.diag([1.0, 1.0, 1.0, 1.0])  # an orthogonal drift: invisible to lag-0 covariance
-    small = 0.3 * (R - np.eye(k)) + np.eye(k)
-    Ld = _ar_latents(20000, k, rng) @ np.linalg.inv(small).T  # new day = drifted latents
-    A = fit_tlma_map(lagged_covs(L0, lags), lagged_covs(Ld, lags), lam=1e-4)
-    err_tlma = np.linalg.norm(A - small) / np.linalg.norm(small)
-    A0 = fit_tlma_map(lagged_covs(L0, (0,)), lagged_covs(Ld, (0,)), lam=1e-4)
-    err_cov = np.linalg.norm(A0 - small) / np.linalg.norm(small)
-    assert err_tlma < 0.1
-    assert err_tlma < err_cov
+def _rotation(k, rng, angle=0.3):
+    from scipy.linalg import expm
+    S = rng.normal(size=(k, k))
+    S = (S - S.T) / 2
+    return expm(angle * S / np.linalg.norm(S, 2))  # orthogonal, ~angle radians from identity
+
+
+def _recovery_errors(rho, seed):
+    rng = np.random.default_rng(seed)
+    k, lags = len(rho), (0, 1, 2, 4, 8)
+    L0 = _ar_latents(20000, k, rng, rho)
+    R = _rotation(k, rng)
+    # new day: z_d = R^T z, so the aligning map is A = R. Unit-variance latents => C_d(0) = C_0(0) = I,
+    # i.e. the drift is invisible to lag-0 covariance matching.
+    Ld = _ar_latents(20000, k, rng, rho) @ R
+    A = fit_tlma_map(lagged_covs(L0, lags), lagged_covs(Ld, lags), lam=1e-6)
+    A0 = fit_tlma_map(lagged_covs(L0, (0,)), lagged_covs(Ld, (0,)), lam=1e-6)
+    rel = lambda M: np.linalg.norm(M - R) / np.linalg.norm(R - np.eye(k))  # 1.0 = no better than identity
+    return rel(A), rel(A0)
+
+
+def test_tlma_recovers_rotation_that_covariance_alone_cannot():
+    # Only partial recovery: relative error 0.19-0.49 over seeds 0-2 with 20k bins (1.0 = identity).
+    for seed in (0, 1, 2):
+        err_tlma, err_cov = _recovery_errors(np.linspace(0.5, 0.98, 4), seed=seed)
+        assert err_tlma < 0.6      # lagged moments recover a substantial part of the rotation
+        assert err_cov > 0.9       # lag-0 covariance leaves A at the identity
+
+
+def test_tlma_cannot_identify_rotation_when_autocorrelations_are_equal():
+    """Known limit: with equal autocorrelation every lagged covariance is proportional to I, so any
+    rotation fits equally well (the same failure as AMUSE/SOBI); with a tiny ridge the solution is
+    arbitrary (relative error 4-7 over seeds 0-2), which is why a pull toward the identity is needed."""
+    err_tlma, _ = _recovery_errors([0.9, 0.9, 0.9, 0.9], seed=1)
+    assert err_tlma > 0.9
+
+
+def test_lagged_covs_do_not_straddle_file_boundaries():
+    a = np.tile([[1.0], [-1.0]], (50, 1))   # alternating: lag-1 autocovariance -1
+    b = a.copy()
+    joined = lagged_covs(np.concatenate([a, b[1:]]), (1,))[0]  # boundary pair (+1 then +1) would add +1
+    split = lagged_covs([a, b[1:]], (1,))[0]
+    assert split[0, 0] == pytest.approx(-1.0, abs=1e-3)
+    assert joined[0, 0] > split[0, 0]
 
 
 def test_behaviour_weights_are_scale_free():
