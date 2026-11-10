@@ -1,0 +1,10 @@
+# Docker (linux/amd64) local-evaluator runs, held-in minival. Native results: results/evalai_local/*.json
+docker h1 wf: 'Held In R2 Mean': np.float64(0.17103168368339539)
+docker h1 gru: 'Held In R2 Mean': np.float64(0.06934352188060681)
+docker m1 wf: 'Held In R2 Mean': np.float64(0.38589200692487274)
+docker m1 gru: 'Held In R2 Mean': np.float64(0.4580691921365662)
+docker m2 wf: 'Held In R2 Mean': np.float64(0.011944303987547755)
+docker m2 gru: 'Held In R2 Mean': np.float64(0.08740248717367649)
+docker h1 gru_rawnorm: 'Held In R2 Mean': np.float64(0.14918548365434012)
+docker m1 gru_rawnorm: 'Held In R2 Mean': np.float64(0.4370932046168122)
+docker m2 gru_rawnorm: 'Held In R2 Mean': np.float64(0.09421761310659349)
