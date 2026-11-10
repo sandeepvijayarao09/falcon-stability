@@ -265,5 +265,177 @@
     "sha256": "31b277b158f495f63f880049450c2cd7d8acdd6f0e954887058d6304333453e3"
    }
   }
+ },
+ "m1b": {
+  "dandiset": "001209",
+  "version": "draft",
+  "files": {
+   "m1b/held_in_calib/sub-MonkeyX-held-in-calib_ses-20121206_behavior+ecephys.nwb": {
+    "asset_id": "21ec556e-047d-4843-8316-a34967bc69fa",
+    "size": 59352818,
+    "sha256": "afa9c2f58b4abd187f55711187fe2a75ea6d805e2b781cc86726b8ce2f2360b2"
+   },
+   "m1b/held_in_calib/sub-MonkeyX-held-in-calib_ses-20121207_behavior+ecephys.nwb": {
+    "asset_id": "4c3140ea-abe6-4c3c-a2ea-1025e5bef288",
+    "size": 52469272,
+    "sha256": "df056afae5eafb00519ed6231d62e4e7bbce331490ab6fe31f215c0667e5bd7f"
+   },
+   "m1b/held_in_calib/sub-MonkeyX-held-in-calib_ses-20121210_behavior+ecephys.nwb": {
+    "asset_id": "12b6eb45-0ade-4781-b812-85d46f63bd90",
+    "size": 55430880,
+    "sha256": "abecbc8c9bdcaa73b957ef4cfb67d84d02ede3df242877a6d6c1d12f6f0c3ffe"
+   },
+   "m1b/held_in_calib/sub-MonkeyX-held-in-calib_ses-20121212_behavior+ecephys.nwb": {
+    "asset_id": "36e04ea3-70d3-4b37-bd3e-a660425bc34e",
+    "size": 57045746,
+    "sha256": "ed878048a2e68cc3cb5cf33bd4b595e2248c5fa61bc019f573ea104ebbb96e96"
+   },
+   "m1b/held_out_calib/sub-MonkeyX-held-out-calib_ses-20121213_behavior+ecephys.nwb": {
+    "asset_id": "a5eb886f-9850-4d3f-b382-2f1117a6c3b7",
+    "size": 1588986,
+    "sha256": "3ae1daa1ccc80b02fbe3b89ae307e37ad60481bd8ce4aa3e7b1f5128562cc670"
+   },
+   "m1b/held_out_calib/sub-MonkeyX-held-out-calib_ses-20121214_behavior+ecephys.nwb": {
+    "asset_id": "48e20195-bc1b-46d8-a626-9713ac9108ea",
+    "size": 3370972,
+    "sha256": "2f1f21ba7010ce371d56e3a558efda0dd60ee6834b1646568caf84e3a10c9119"
+   },
+   "m1b/held_out_calib/sub-MonkeyX-held-out-calib_ses-20121218_behavior+ecephys.nwb": {
+    "asset_id": "a9838f18-3581-4171-bf31-f4f0371b7ed5",
+    "size": 1143953,
+    "sha256": "0a1c8f8e78ea901177b83dd6461f7ff9ad79a41a32aec62301293714f3c60e7d"
+   },
+   "m1b/held_out_calib/sub-MonkeyX-held-out-calib_ses-20121219_behavior+ecephys.nwb": {
+    "asset_id": "1b18af54-d898-4d73-974d-ffc623e5308e",
+    "size": 1215936,
+    "sha256": "e7f7037bdcea4145a232b205f4ad15b34c03e56e351e0754e844a14183475371"
+   },
+   "m1b/minival/sub-MonkeyX-held-in-minival_ses-20121206_behavior+ecephys.nwb": {
+    "asset_id": "991a0302-daff-462e-a909-de0a600452ee",
+    "size": 480958,
+    "sha256": "e4d0545288168d030267154ef496c50b83069e19693086dde1f0a0671aca6d61"
+   },
+   "m1b/minival/sub-MonkeyX-held-in-minival_ses-20121207_behavior+ecephys.nwb": {
+    "asset_id": "f46177d9-46b8-429f-81ea-09a8a9c496bd",
+    "size": 472807,
+    "sha256": "7c22be37fe51b4231622275fcf9404d7a59a4339380eb56c4be72e94c46018de"
+   },
+   "m1b/minival/sub-MonkeyX-held-in-minival_ses-20121210_behavior+ecephys.nwb": {
+    "asset_id": "2679e2e9-43c4-495f-b867-3e1538021f72",
+    "size": 451074,
+    "sha256": "b59a7d592fb92d5043cf135f99c3f0fd543572899097f1317ca4013b4ad2163f"
+   },
+   "m1b/minival/sub-MonkeyX-held-in-minival_ses-20121212_behavior+ecephys.nwb": {
+    "asset_id": "48d5a9e9-3371-4637-99d1-21e59c292cc5",
+    "size": 530957,
+    "sha256": "31ca85143cc2b728104d8a862199e40c3846b1df63ef4558e7bfd5b8fbf55e4c"
+   }
+  }
+ },
+ "m2": {
+  "dandiset": "000953",
+  "version": "draft",
+  "files": {
+   "m2/held_in_calib/sub-MonkeyN-held-in-calib_ses-2020-10-19-Run1_behavior+ecephys.nwb": {
+    "asset_id": "08243690-f05a-4b1a-8980-6bb6115d67c2",
+    "size": 2397151103,
+    "sha256": "dc40ef63a379ae71bd051cc3c5ec0e6756bc24e5eda604ee5d100a8af3abe91a"
+   },
+   "m2/held_in_calib/sub-MonkeyN-held-in-calib_ses-2020-10-19-Run2_behavior+ecephys.nwb": {
+    "asset_id": "ebf0646b-3a66-41e3-b395-1d973bc694ff",
+    "size": 2407211257,
+    "sha256": "fdacf9f9cc55c5b778e5f7ae6c8014520cde038ef6f0dedb5e95ce2c51b0c677"
+   },
+   "m2/held_in_calib/sub-MonkeyN-held-in-calib_ses-2020-10-20-Run1_behavior+ecephys.nwb": {
+    "asset_id": "8ce86e3b-0166-4a98-b08a-dfb60afe6201",
+    "size": 1879943059,
+    "sha256": "757cf61bdbbdad4faaf363a7c6fc570ee3b7815bfa0359cad35cab4447f2fb49"
+   },
+   "m2/held_in_calib/sub-MonkeyN-held-in-calib_ses-2020-10-20-Run2_behavior+ecephys.nwb": {
+    "asset_id": "25ff78b8-62d3-435c-8ae1-a82acc265802",
+    "size": 1866625575,
+    "sha256": "5a11cded250929786d2991d3059b448e30a7e5aa57afc75ff4c514797f28ee1e"
+   },
+   "m2/held_in_calib/sub-MonkeyN-held-in-calib_ses-2020-10-27-Run1_behavior+ecephys.nwb": {
+    "asset_id": "d80bc39d-0052-4468-bb4f-c1137c8ca985",
+    "size": 1470730520,
+    "sha256": "f7a8e1288bf1fa225ba8cde85f969d6e5547d937fbb69f531580bec9c8c4f1e0"
+   },
+   "m2/held_in_calib/sub-MonkeyN-held-in-calib_ses-2020-10-27-Run2_behavior+ecephys.nwb": {
+    "asset_id": "43f6c095-b7d3-4599-a9a8-a8b111813a56",
+    "size": 1773775197,
+    "sha256": "e9d1bc0968f06bfe820fc3a036324032b35890a295dd8f9ad8b1b33a05e0bcd4"
+   },
+   "m2/held_in_calib/sub-MonkeyN-held-in-calib_ses-2020-10-28-Run1_behavior+ecephys.nwb": {
+    "asset_id": "66179cbd-a1a7-4c63-97fe-d92339f20f2d",
+    "size": 2137463302,
+    "sha256": "45a41f15110a8c950f2439cddfa0c207179cfa97d1035c7b1776d2b3dba1c601"
+   },
+   "m2/held_out_calib/sub-MonkeyN-held-out-calib_ses-2020-10-30-Run1_behavior+ecephys.nwb": {
+    "asset_id": "62d4ac13-b645-4997-ab79-08d6432ff731",
+    "size": 329103743,
+    "sha256": "7f3a2c34684e0bcf6ea69096d7218ca24486a27402e5f07b0dc5010921595e2d"
+   },
+   "m2/held_out_calib/sub-MonkeyN-held-out-calib_ses-2020-10-30-Run2_behavior+ecephys.nwb": {
+    "asset_id": "737b51aa-a009-4ceb-b6a8-2d68a34b9909",
+    "size": 307734686,
+    "sha256": "57e910fdab4f2834cdacf17b0f5888c972d1e2c75ab16c1059ae5723cd901490"
+   },
+   "m2/held_out_calib/sub-MonkeyN-held-out-calib_ses-2020-11-18-Run1_behavior+ecephys.nwb": {
+    "asset_id": "f5d42e29-efe9-48ff-b0ae-ff1d0c2dc696",
+    "size": 303915197,
+    "sha256": "1f7e27989f0a2ec58d3d8c4b3cadb482c136c647934514d91476e14d1658e25e"
+   },
+   "m2/held_out_calib/sub-MonkeyN-held-out-calib_ses-2020-11-19-Run1_behavior+ecephys.nwb": {
+    "asset_id": "0395a19a-467f-4c7c-8fdb-c21893da3923",
+    "size": 367545853,
+    "sha256": "d621a056947723d4ac50b70d0b8688f456f0a046ed2a97c15cd77962e142c83d"
+   },
+   "m2/held_out_calib/sub-MonkeyN-held-out-calib_ses-2020-11-24-Run1_behavior+ecephys.nwb": {
+    "asset_id": "ca032164-b5ba-4dda-ab18-8bbc93a595b3",
+    "size": 267286366,
+    "sha256": "0f8e3c6fc3afbecfc623626f19ee30c4a0f0008b475a4c0d06065d326d69ff7d"
+   },
+   "m2/held_out_calib/sub-MonkeyN-held-out-calib_ses-2020-11-24-Run2_behavior+ecephys.nwb": {
+    "asset_id": "b173e285-c992-490d-a539-08c2843326a3",
+    "size": 283710806,
+    "sha256": "b1d7fec18eaf36ac4ef327d82a7ab6d89e1db5eb9c5653b727b6390135cc15ba"
+   },
+   "m2/minival/sub-MonkeyN-held-in-minival_ses-2020-10-19-Run1_behavior+ecephys.nwb": {
+    "asset_id": "9df908a2-3381-4486-b52d-358f68424033",
+    "size": 21196248,
+    "sha256": "fc2a4f58e90eb528dfd31a69b01b29d26c029ca37114b10386d52e4eb84f28e5"
+   },
+   "m2/minival/sub-MonkeyN-held-in-minival_ses-2020-10-19-Run2_behavior+ecephys.nwb": {
+    "asset_id": "08b354ca-d8e1-4c67-a84c-893e7c082454",
+    "size": 15855264,
+    "sha256": "fc8195cf3a10fcb467983c20141dad581da4a49e81de72d141d38b96db531368"
+   },
+   "m2/minival/sub-MonkeyN-held-in-minival_ses-2020-10-20-Run1_behavior+ecephys.nwb": {
+    "asset_id": "5f29fc64-32f8-41b1-93e7-82043fd87f72",
+    "size": 14449040,
+    "sha256": "ba34874464934308e044270ef2cf4cf657cab61c6535b9464a63436f57754970"
+   },
+   "m2/minival/sub-MonkeyN-held-in-minival_ses-2020-10-20-Run2_behavior+ecephys.nwb": {
+    "asset_id": "5704e8e3-a8e9-42e1-9c94-f413cea74ba0",
+    "size": 14278472,
+    "sha256": "9103ac8c202bbfc0f7fca1e658ca39bdb1d1bde7930ee8b93528c329017aa7c4"
+   },
+   "m2/minival/sub-MonkeyN-held-in-minival_ses-2020-10-27-Run1_behavior+ecephys.nwb": {
+    "asset_id": "bc2760ef-f23e-486c-9159-4264aeb514d0",
+    "size": 17341136,
+    "sha256": "b7343ed721df7b50858eb25eb5b3dbba5cc91e393b05dc8bd2659df66486a2b7"
+   },
+   "m2/minival/sub-MonkeyN-held-in-minival_ses-2020-10-27-Run2_behavior+ecephys.nwb": {
+    "asset_id": "c32a6c5a-db80-47ce-9501-8afaa1a2e62e",
+    "size": 17360784,
+    "sha256": "b6fdaf80e698e7a7e664c3b72161655328be131e29b7366e045f599d63267dd8"
+   },
+   "m2/minival/sub-MonkeyN-held-in-minival_ses-2020-10-28-Run1_behavior+ecephys.nwb": {
+    "asset_id": "3381f481-440a-4d80-92e1-0edd9927e060",
+    "size": 23694592,
+    "sha256": "bc578c5fda5a36a1ad979026277fc3573d2bde541e316f24f9431a01ab502412"
+   }
+  }
  }
 }
